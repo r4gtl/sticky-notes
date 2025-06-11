@@ -1,9 +1,9 @@
 from rest_framework import serializers
 
-from .models import Note
+from .models import StickyNote
 
 
-class NoteSerializer(serializers.ModelSerializer):
+class StickyNoteSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Note
+        model = StickyNote
         fields = '__all__'

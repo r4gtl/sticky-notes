@@ -1,17 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
 
-from .models import Note
-from .serializers import NoteSerializer
+from .models import StickyNote
+from .serializers import StickyNoteSerializer
 
 
-class NoteViewSet(viewsets.ModelViewSet):
-    queryset = Note.objects.all()
-    serializer_class = NoteSerializer
+class StickyNoteViewSet(viewsets.ModelViewSet):
+    queryset = StickyNote.objects.all()
+    serializer_class = StickyNoteSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Note.objects.filter(recipient=self.request.user)
+        return StickyNote.objects.filter(recipient=self.request.user)
     
 
 

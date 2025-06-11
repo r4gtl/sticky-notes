@@ -1,9 +1,9 @@
 DEBUG=1
 PYTHONUNBUFFERED=1
-SECRET_KEY=''
+SECRET_KEY='15%4^b+y!*!5yaos4k4!gkfqdt@0(g)mu+0q--qh%0ts(+%j3t'
 DJANGO_ALLOWED_HOSTS=0.0.0.0,localhost,127.0.0.1
 POSTGRES_DB=sticky_notes
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=stefanopostgresql
-DB_HOST=10.0.2.2
-DB_PORT=5433
+DB_HOST=localhost
+DB_PORT=5432
