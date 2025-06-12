@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import { useAuth } from '../hooks/useAuth';
+import { useAuth } from '../context/AuthContext';
 
 interface LoginFormProps {
     onSuccess?: () => void;
@@ -32,6 +32,15 @@ const LoginForm: React.FC<LoginFormProps> = ({ onSuccess }) => {
                     type='text'
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    required
+                    />
+            </Form.Group>
+            <Form.Group controlId="password" className='mt-3'>
+                <Form.Label>Password</Form.Label>
+                <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={e => setpassword(e.target.value)}
                     required
                     />
             </Form.Group>

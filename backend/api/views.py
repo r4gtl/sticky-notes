@@ -1,17 +1,14 @@
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from rest_framework import status
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated, AllowAny
-
 from notes.models import StickyNote
 from notes.serializers import StickyNoteSerializer
+from rest_framework import serializers, status
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework import serializers
+
 from .serializers import RegisterSerializer
-
-
 
 
 # View per la registrazione degli utenti
@@ -42,7 +39,13 @@ class StickyNoteListCreate(APIView):
         """
         Restituisce tutte le sticky notes per l'utente autenticato.
         """
-        notes = StickyNote.objects.filter(receiver=request.user).order_by('-created_at')
+        #notes = StickyNote.objects.filter(receiver=request.user).order_by('-created_at')
+        notes = StickyNote.objects.filter(receiver=request.user)
+        # se viene richiesto unread, filtriamo solo quelle non lette
+        if request.query_params.get('unread') == 'true':
+            notes = notes.filter(is_read=False)
+        notes = notes.order_by('created_at')
+        
         serializer = StickyNoteSerializer(notes, many=True)
         return Response(serializer.data)
 
