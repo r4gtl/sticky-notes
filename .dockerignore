@@ -1,0 +1,44 @@
+# Ambiente virtuale
+venv/
+env/
+.venv/
+
+# File temporanei Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc.*
+*.py~
+
+# Cartelle specifiche Django
+staticfiles/
+media/
+migrations/
+*.sqlite3
+
+# File sensibili o locali
+.env
+.env.*
+*.log
+*.pid
+
+# File di configurazione e metadati
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# File di progetto / IDE
+*.code-workspace
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Contenuto generato (es. coverage, test output)
+htmlcov/
+coverage.xml
+*.cover
+nosetests.xml
+test-results.xml

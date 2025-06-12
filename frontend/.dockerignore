@@ -1,0 +1,23 @@
+# Cartelle da ignorare
+node_modules
+build
+coverage
+
+# File di configurazione e metadati
+.dockerignore
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+
+# File di sistema o IDE
+*.log
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# Versioning / progetto
+.git
+.gitignore
+.vscode
+.idea

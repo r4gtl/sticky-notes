@@ -14,7 +14,6 @@ services:
     networks:
       sticky_net:
         ipv4_address: 172.25.0.10
-
   db:
     image: postgres:15
     container_name: postgres_db
@@ -27,19 +26,6 @@ services:
     networks:
       sticky_net:
         ipv4_address: 172.25.0.5
-
-  frontend:
-    build:
-      context: ./frontend
-    container_name: sticky_frontend
-    ports:
-      - '3000:80'
-    networks:
-      sticky_net:
-        ipv4_address: 172.25.0.20
-    depends_on:
-      - web
-
 volumes:
   pgdata:
 
