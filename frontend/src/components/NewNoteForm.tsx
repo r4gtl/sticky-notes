@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Alert, Button, Card, Form } from 'react-bootstrap';
+import { Alert, Button, Card, Col, Form, Row } from 'react-bootstrap';
 import api from '../api/client';
 
 interface NewNoteFormProps {
+    receiverId: number;
     onCreated?: () => void;
+    onCancel?: () => void;
 }
 
-const NewNoteForm: React.FC<NewNoteFormProps> = ({ onCreated }) => {
-    const [receiver, setReceiver] = useState<number | ''>('');
+const NewNoteForm: React.FC<NewNoteFormProps> = ({ receiverId, onCreated }) => {
+    //const [receiver, setReceiver] = useState<number | ''>('');
     const [title, setTitle] = useState<string>('');
     const [message, setMessage] = useState<string>('');
     const [error, setError] = useState<string | null>(null);
@@ -19,11 +21,11 @@ const NewNoteForm: React.FC<NewNoteFormProps> = ({ onCreated }) => {
         setLoading(true);
         try {
             await api.post('/notes/', {
-                receiver,
+                receiver: receiverId,
                 title,
                 message,
             });
-            setReceiver('');
+            
             setTitle('');
             setMessage('');
             onCreated && onCreated();
@@ -42,16 +44,7 @@ const NewNoteForm: React.FC<NewNoteFormProps> = ({ onCreated }) => {
             <Card.Body>
                 <Form onSubmit={handleSubmit}>
                     {error && <Alert variant="danger">{error}</Alert>}
-                    <Form.Group controlId='receiver'>
-                        <Form.Label>ID Destinatario</Form.Label>
-                        <Form.Control
-                            type="number"
-                            value={receiver}
-                            onChange={(e) => setReceiver(Number(e.target.value))}
-                            required
-                            placeholder='Inserisci ID destinatario'
-                        />
-                    </Form.Group>
+                    
                     <Form.Group controlId="title" className="mt-3">
                         <Form.Label>Titolo</Form.Label>
                         <Form.Control
@@ -71,9 +64,18 @@ const NewNoteForm: React.FC<NewNoteFormProps> = ({ onCreated }) => {
                         required
                         />
                     </Form.Group>
-                    <Button variant="primary" type="submit" className="mt-3" disabled={loading}>
-                        {loading ? 'Invio...' : 'Invia Nota'}
-                    </Button>
+                    <Row className='mt-3'>
+                        <Col>                        
+                            <Button variant="primary" type="submit" className="mt-3" disabled={loading}>
+                                {loading ? 'Invio...' : 'Invia Nota'}
+                            </Button>
+                        </Col>
+                        <Col className="text-end">
+                            <Button variant="outline-secondary" onClick={onCancel}>
+                                Annulla
+                            </Button>
+                        </Col>
+                    </Row>
                 </Form>
             </Card.Body>
         </Card>

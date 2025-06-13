@@ -4,67 +4,101 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/client';
 import NewNoteForm from '../components/NewNoteForm';
 import NotesList from '../components/NotesList';
+import SentNotesList from '../components/SentNotesList';
+import UsersList from '../components/UsersList';
 import { useAuth } from '../context/AuthContext';
+import { StickyNote } from '../types/stickyNote';
 
-interface StickyNote {
-    id: number;
-    sender: number;
-    receiver: number;
-    title: string;
-    message: string;
-    is_read: boolean;
-    created_at: string;
-
-}
 
 const NotesPage: React.FC = () => {
     const { logout } = useAuth();
     const navigate = useNavigate();
-    const [notes, setNotes] = useState<StickyNote[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
+    
     const handleLogout = () => {
         logout();
         navigate('/login');
     }
 
-    const fetchNotes = async () => {
+    const [users, setUsers] = useState<Array<{ id: number; username: string }>>([]);
+    const [receivedNotes, setReceivedNotes] = useState<StickyNote[]>([]);
+    const [sentNotes, setSentNotes] = useState<StickyNote[]>([]);
+    const [selectedUser, setSelectedUser] = useState<number | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+
+
+    const fetchData = async () => {
         setLoading(true);
-        try {
-            const resp = await api.get<StickyNote[]>('/notes/', { params: { unread: 'true' } });
-            setNotes(resp.data);
+        try{
+            const [usersRes, recRes, sentRes] = await Promise.all([
+                api.get('/auth/users/'),
+                api.get('/notes/', { params: { unread: 'true' } }),
+                api.get('/notes/', { params: { sent: 'true' } }),
+            ]);
+            setUsers(usersRes.data);
+            setReceivedNotes(recRes.data);
+            setSentNotes(sentRes.data);
         } catch (e) {
-            console.error('Errorre caricamento note:', e);
+            console.error('Errore di caricamento dati:' , e);
         } finally {
             setLoading(false);
         }
     };
+
     useEffect(() => {
-        fetchNotes();
+        fetchData();
     }, []);
 
+    const handleUserSelect = (id: number) => {
+        setSelectedUser(id);
+    };
+
+    const handleNoteCreated = () => {
+        setSelectedUser(null);
+        fetchData();
+    }
+    
     return (
-        <Container className='py-4'>
-            <Row className='mb-3'>
-                <Col><h2>Sticky Notes</h2></Col>
-                <Col className='text-end'>
-                <Button variant='secondary' onClick={handleLogout}>
-                    Logout
-                </Button>
+        <Container fluid className='py-4'>
+            <Row className='mb-3 align-items-center'>
+                <Col>
+                    <h2>Sticky Notes App</h2>
+                </Col>
+                <Col className="text-end">
+                    <Button variant="secondary" onClick={handleLogout}>
+                        Logout
+                    </Button>
                 </Col>
             </Row>
 
-            {/* Form per creare nuove note */}
-            <NewNoteForm onCreated={fetchNotes} />
-
             {loading ? (
-                <div className='text-center'>
-                    <Spinner animation='border' role='status'>
-                        <span className='visually-hidden'>Loading...</span>
-                    </Spinner>
+                <div className='textCenter'>
+                    <Spinner animation='border'/>
+
                 </div>
             ) : (
-                <NotesList notes={notes} onRefresh={fetchNotes} />
+                <Row>
+                    {/* Colonna Utenti */}
+                    <Col md={3} className='border-end' style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+                        <UsersList users={users} onSelect={handleUserSelect} selectedId={selectedUser}/>
+                        {selectedUser && (
+                            <NewNoteForm receiverId={selectedUser} onCreated={handleNoteCreated} />
+                        )}
+                    </Col>
+
+                    {/* Colonna note ricevute */}
+                    <Col md={6} className='border-end'>
+                        <h5>Note Ricevute</h5>
+                        <NotesList notes={receivedNotes} onRefresh={fetchData} />
+                    </Col>
+
+                    {/* Colonna Note inviate */}
+                    <Col md={3} style={{ maxHeight: '80vh', overflowY: 'auto' }}>
+                        <h5>Note Inviate</h5>
+                        <SentNotesList notes={sentNotes} onRefresh={fetchData} />
+                    </Col>
+                </Row>
             )}
+
         </Container>
     );
 };

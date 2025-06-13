@@ -8,7 +8,19 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, UserSerializer
+
+User = get_user_model()
+
+
+# View per l'elenco utenti
+class UsersListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
 
 
 # View per la registrazione degli utenti
@@ -36,16 +48,16 @@ class StickyNoteListCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """
-        Restituisce tutte le sticky notes per l'utente autenticato.
-        """
-        #notes = StickyNote.objects.filter(receiver=request.user).order_by('-created_at')
-        notes = StickyNote.objects.filter(receiver=request.user)
-        # se viene richiesto unread, filtriamo solo quelle non lette
+        notes = StickyNote.objects.all()
+        # note ricevute non lette
         if request.query_params.get('unread') == 'true':
-            notes = notes.filter(is_read=False)
-        notes = notes.order_by('created_at')
-        
+            notes = notes.filter(receiver=request.user, is_read=False)
+        # note inviate
+        elif request.query_params.get('sent') == 'true':
+            notes = notes.filter(sender=request.user)
+        else:
+            notes = notes.filter(receiver=request.user)
+        notes = notes.order_by('-created_at')
         serializer = StickyNoteSerializer(notes, many=True)
         return Response(serializer.data)
 
