@@ -50,12 +50,15 @@ const NotesPage: React.FC = () => {
 
     const handleUserSelect = (id: number) => {
         setSelectedUser(id);
+
     };
 
     const handleNoteCreated = () => {
         setSelectedUser(null);
         fetchData();
-    }
+    };
+
+    const handleCancelNew = () => setSelectedUser(null);
     
     return (
         <Container fluid className='py-4'>
@@ -81,7 +84,7 @@ const NotesPage: React.FC = () => {
                     <Col md={3} className='border-end' style={{ maxHeight: '80vh', overflowY: 'auto' }}>
                         <UsersList users={users} onSelect={handleUserSelect} selectedId={selectedUser}/>
                         {selectedUser && (
-                            <NewNoteForm receiverId={selectedUser} onCreated={handleNoteCreated} />
+                            <NewNoteForm receiverId={selectedUser} onCreated={handleNoteCreated} onCancel={handleCancelNew}/>
                         )}
                     </Col>
 
