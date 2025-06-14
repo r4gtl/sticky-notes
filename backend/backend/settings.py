@@ -145,13 +145,22 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
-
+if DEBUG:
+    # in sviluppo: serviamo direttamente da /static/ nella root del progetto
+    STATICFILES_DIRS = [ BASE_DIR / "static" ]
+else:
+    # in produzione: collezioniamo in una cartella separata
+    STATIC_ROOT = BASE_DIR / "staticfiles"
+    
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),

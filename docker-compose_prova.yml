@@ -1,23 +1,20 @@
+version: '3.8'
+
 services:
-  web:
+  django_backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile # <── must point here
     container_name: django_backend
-    volumes:
-      - ./backend:/app
-    working_dir: /app
-    ports:
-      - '8000:8000'
     env_file:
       - .env
+    ports:
+      - '8000:8000'
     depends_on:
-      - db
-    networks:
-      sticky_net:
-        ipv4_address: 172.25.0.10
+      - postgres_db
+    # ← non montare più ./backend:/app
 
-  db:
+  postgres_db:
     image: postgres:15
     container_name: postgres_db
     volumes:
@@ -26,11 +23,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    networks:
-      sticky_net:
-        ipv4_address: 172.25.0.5
 
-  frontend:
+  sticky_frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -38,17 +32,7 @@ services:
     ports:
       - '3000:80'
     depends_on:
-      - web
-    networks:
-      sticky_net:
-        ipv4_address: 172.25.0.20
+      - django_backend
 
 volumes:
   pgdata:
-
-networks:
-  sticky_net:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.25.0.0/24

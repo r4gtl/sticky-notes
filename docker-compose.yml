@@ -1,14 +1,20 @@
 services:
-  web:
-    build: .
+  django_backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
     container_name: django_backend
-    volumes:
-      - ./backend:/app
-    working_dir: /app
+    #volumes:
+    #  - ./backend:/app
+    #working_dir: /app
     ports:
       - '8000:8000'
     env_file:
       - .env
+    environment:
+      # Connessione al PostgreSQL esterno sul host 192.168.1.43
+      DB_HOST: 192.168.1.43
+      DB_PORT: 5432
     depends_on:
       - db
     networks:
@@ -28,17 +34,18 @@ services:
       sticky_net:
         ipv4_address: 172.25.0.5
 
-  frontend:
+  sticky_frontend:
     build:
       context: ./frontend
+      dockerfile: Dockerfile
     container_name: sticky_frontend
     ports:
       - '3000:80'
+    depends_on:
+      - django_backend
     networks:
       sticky_net:
         ipv4_address: 172.25.0.20
-    depends_on:
-      - web
 
 volumes:
   pgdata:

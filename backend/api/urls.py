@@ -1,14 +1,16 @@
 from django.urls import path
-from rest_framework_simplejwt.views import (TokenObtainPairView,
-                                            TokenRefreshView)
-
+#from rest_framework_simplejwt.views import (TokenObtainPairView,
+#                                            TokenRefreshView)
+from rest_framework_simplejwt.views import TokenRefreshView
 from .views import (RegisterView, StickyNoteDetail, StickyNoteListCreate,
-                    UsersListView)
+                    UsersListView, DebugTokenView)
 
 urlpatterns = [
     # Autenticazione JWT
     path('auth/register/', RegisterView.as_view(), name='auth-register'),
-    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    #path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/', DebugTokenView.as_view(), name='token_obtain_pair'),
+
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 
     # Lista utenti

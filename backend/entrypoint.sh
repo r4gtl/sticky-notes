@@ -51,5 +51,5 @@ if [ "$DEBUG" = "1" ]; then
   exec python manage.py runserver 0.0.0.0:8000
 else
   echo "🚀 DEBUG=0: produzione. Avvio Gunicorn"
-  exec gunicorn backend.wsgi:application --bind 0.0.0.0:8000
+  exec gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 30
 fi

@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from rest_framework_simplejwt.views import TokenObtainPairView
 from .serializers import RegisterSerializer, UserSerializer
 
 User = get_user_model()
@@ -96,3 +97,9 @@ class StickyNoteDetail(APIView):
         note = self.get_object(pk, request.user)
         note.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class DebugTokenView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        print("🔐 Tentativo di login con dati:", request.data)
+        return super().post(request, *args, **kwargs)
